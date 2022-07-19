@@ -56,3 +56,36 @@ getstr:
         pop     rdi
         pop     rax
         ret
+
+; Verifies whether NUL-terminated string is only composed of decimal digits
+; Expects string in RSI
+; Outputs 1 or 0 to RAX
+isnumber:
+        push    rsi
+        mov     rax, 0x01
+
+    isnumber_loop:
+        cmp     byte [rsi], 0x00
+        je      isnumber_pool
+
+    isnumber_if1:
+        cmp     byte [rsi], 0x30    ; comparing to '0'
+        jge     isnumber_if2
+
+        mov     rax, 0x00
+        jmp     isnumber_pool
+
+    isnumber_if2:
+        cmp     byte [rsi], 0x39    ; comparing to '9'
+        jle     isnumber_fi
+
+        mov     rax, 0x00
+        jmp     isnumber_pool
+
+    isnumber_fi:
+        add     rsi, 0x01
+        jmp     isnumber_loop
+
+    isnumber_pool:
+        pop     rsi
+        ret

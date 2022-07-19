@@ -2,6 +2,9 @@ section .data
     msg_1:  db "Welcome to Assembly fizzbuzz!",0x0a,0x00
     msg_2:  db "Enter a number: ",0x00
 
+section .bss
+    limit:  resb 0xf1
+
 section .text
     global  _start
 
@@ -13,6 +16,10 @@ section .text
 
         mov     rsi, msg_2
         call    putstr
+
+        mov     rsi, limit
+        mov     rdx, 0xf1
+        call    getstr
 
         mov     rax, 0x3c
         mov     rdi, 0x00
