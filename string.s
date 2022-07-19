@@ -32,3 +32,27 @@ putstr:
         pop     rdi
         pop     rax
         ret
+
+; Reads string from stdin and NUL-terminates it
+; Expects destination in RSI and maximal length (including NUL) in RDX
+; Preserves state of all registers
+getstr:
+        push    rax
+        push    rdi
+        push    rdx
+        push    rsi
+        mov     rax, 0x00   ; sys_read
+        mov     rdi, 0x00   ; stdin
+
+        sub     rdx, 0x01
+        syscall
+
+        add     rsi, rdx
+        add     rsi, 0x01
+        mov     byte [rsi], 0x00
+
+        pop     rsi
+        pop     rdx
+        pop     rdi
+        pop     rax
+        ret
