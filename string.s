@@ -102,3 +102,29 @@ atoi:
         pop     rsi
         pop     rbx
         ret
+
+; RSI - output, RAX - input
+itoa:
+        push    rdx
+        push    rax
+        push    rsi
+        mov     ebx,0x0a
+
+    itoa_loop:
+        cmp     rax,0x00
+        je      itoa_pool
+
+        cqo
+        div     ebx
+        add     rdx,'0'
+        mov     byte [rsi],dl
+        inc     rsi
+        jmp     itoa_loop
+
+    itoa_pool:
+        mov     byte [rsi],0x00
+
+        pop     rsi
+        pop     rax
+        pop     rdx
+        ret
