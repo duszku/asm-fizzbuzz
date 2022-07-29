@@ -38,14 +38,39 @@ getstr:
 
         mov     rax,0x00 ; sys_read
         mov     rdi,0x00 ; stdin
-
-        sub     rdx,0x01 ; leaving some space for NUL
         syscall
 
         add     rsi,rax
+        sub     rsi,0x01
         mov     byte [rsi],0x00 ; NUL-terminating
 
         pop     rsi
         pop     rdi
         pop     rax
+        ret
+
+; Verifies whether string pointed to by value of RSI is composed only of decimal
+; digits and NUL. Outputs either 0 (false) or 1 (true) to AL
+isdec:
+        push    rsi
+    isdec_loop:
+        cmp     byte [rsi],0x00
+        je      isdec_pool
+
+        cmp     byte [rsi],'0'
+        jl      isdec_ret_0
+        cmp     byte [rsi],'9'
+        jg      isdec_ret_0
+
+        add     rsi,0x01
+        jmp     isdec_loop
+
+    isdec_pool:
+        mov     al,0x01
+        pop     rsi
+        ret
+
+    isdec_ret_0:
+        mov     al,0x00
+        pop     rsi
         ret
