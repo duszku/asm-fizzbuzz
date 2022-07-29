@@ -28,3 +28,25 @@ putstr:
         pop     rdi
         pop     rax
         ret
+
+; Reads string from stdin and and NUL-terminates it. Destination should be
+; pointed to by value of RSI and maximal length + 1 should be in RDX
+getstr:
+        push    rax
+        push    rdi
+        push    rsi
+
+        mov     rax,0x00 ; sys_read
+        mov     rdi,0x00 ; stdin
+
+        sub     rdx,0x01 ; leaving some space for NUL
+        syscall
+
+        add     rsi,rax
+        sub     rsi,0x01
+        mov     byte [rsi],0x00 ; NUL-terminating
+
+        pop     rsi
+        pop     rdi
+        pop     rax
+        ret

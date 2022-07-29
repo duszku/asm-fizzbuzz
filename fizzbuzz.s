@@ -6,7 +6,7 @@ section .data
     s_input_msg: db "Give a bound: ",NUL
 
 section .bss
-    s_bound_inp: resb 0x04
+    s_bound_inp: resb 0x09
 
 section .text
     global _start
@@ -18,6 +18,11 @@ section .text
         mov     rsi,s_hello_msg
         call    putstr
         mov     rsi,s_input_msg
+        call    putstr
+
+        mov     rsi,s_bound_inp
+        mov     rdx,0x09
+        call    getstr
         call    putstr
 
         mov     rdi,0x00
