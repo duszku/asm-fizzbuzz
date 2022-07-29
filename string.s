@@ -43,7 +43,6 @@ getstr:
         syscall
 
         add     rsi,rax
-        sub     rsi,0x01
         mov     byte [rsi],0x00 ; NUL-terminating
 
         pop     rsi
