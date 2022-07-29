@@ -103,27 +103,48 @@ atoi:
         pop     rbx
         ret
 
-; RSI - output, RAX - input
+; Converts integer stored in RAX to string that starts at memory location
+; pointed to by RSI and NUL-terminates it.
 itoa:
         push    rdx
         push    rax
         push    rsi
-        mov     ebx,0x0a
+        push    rcx
+
+        mov     ebx,0x0a ; we will be taking rax mod 10 to get digits
+        mov     rcx,rsi  ; saving location of start of the string
 
     itoa_loop:
         cmp     rax,0x00
         je      itoa_pool
 
         cqo
-        div     ebx
-        add     rdx,'0'
+        div     ebx      ; rax mod ebx, remainder stored in rdx
+        add     rdx,'0'  ; ascii-offsetting
         mov     byte [rsi],dl
-        inc     rsi
+        inc     rsi      ; moving to next character
         jmp     itoa_loop
 
     itoa_pool:
         mov     byte [rsi],0x00
+        dec     rsi
 
+    itoa_loop_reverse:
+        cmp     rsi,rcx
+        je      itoa_pool_reverse
+
+        ; swapping
+        mov     dl,byte [rcx]
+        mov     dh,byte [rsi]
+        mov     byte [rcx],dh
+        mov     byte [rsi],dl
+
+        inc     rcx
+        dec     rsi
+        jmp     itoa_loop_reverse
+
+    itoa_pool_reverse:
+        pop     rcx
         pop     rsi
         pop     rax
         pop     rdx
