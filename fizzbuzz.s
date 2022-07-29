@@ -5,8 +5,8 @@ section .data
     s_hello_msg: db "Welcome to assembly fizz-buzz!",LF,NUL
     s_input_msg: db "Give a bound: ",NUL
 
-    tst_1: db "This was a number",LF,NUL
-    tst_2: db "This was not a number",LF,NUL
+    tst_num: db "113",NUL
+    tst: db "use wc -l on me",LF,NUL
 
 section .bss
     s_bound_inp: resb 0x09
@@ -17,29 +17,31 @@ section .text
     %include "string.s"
 
     _start:
-        ; Printing welcome message
-        mov     rsi,s_hello_msg
+;        ; Printing welcome message
+;        mov     rsi,s_hello_msg
+;        call    putstr
+;        mov     rsi,s_input_msg
+;        call    putstr
+;
+;        ; Reading bound from stdin
+;        mov     rsi,s_bound_inp
+;        mov     rdx,0x09
+;        call    getstr
+;        call    atoi
+
+        mov     rsi,tst_num
+        call    atoi
+
+        mov     rsi,tst
+    for:
+        cmp     rax,0x00
+        je      rof
+
         call    putstr
-        mov     rsi,s_input_msg
-        call    putstr
+        sub     rax,0x01
+        jmp for
 
-        ; Reading bound from stdin
-        mov     rsi,s_bound_inp
-        mov     rdx,0x09
-        call    getstr
-
-    if:
-        call    isdec
-        cmp     al,0x00
-        je      else
-
-        mov     rsi,tst_1
-        jmp     fi
-
-    else:
-        mov     rsi,tst_2
-    fi:
-        call    putstr
+    rof:
 
         mov     rdi,0x00
         call    return_rdi

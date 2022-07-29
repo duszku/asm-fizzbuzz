@@ -81,19 +81,18 @@ atoi:
         push    rbx
         push    rsi
 
-
         call    isdec
         cmp     al,0x00
         mov     rax,0x00
         je      atoi_pool
 
     atoi_loop:
-        mov     rbx,byte [rsi] ; take current character
-        cmp     rbx,0x00
+        mov     bl,byte [rsi] ; take current character
+        cmp     bl,0x00
         je      atoi_pool
 
-        mul     rax,0x0a ; multiply accumulator by 10
-        sub     rbx,'0'  ; subtract the offset
+        imul    rax,0x0a ; multiply accumulator by 10
+        sub     bl,'0'   ; subtract the offset
         add     rax,rbx  ; increase by new digit
         inc     rsi
 
