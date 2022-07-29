@@ -74,3 +74,32 @@ isdec:
         mov     al,0x00
         pop     rsi
         ret
+
+; Converts NUL-terminated string pointed to by value of RSI to integer and
+; outputs it to RAX. If said string cannot be converted, outputs 0.
+atoi:
+        push    rbx
+        push    rsi
+
+
+        call    isdec
+        cmp     al,0x00
+        mov     rax,0x00
+        je      atoi_pool
+
+    atoi_loop:
+        mov     rbx,byte [rsi] ; take current character
+        cmp     rbx,0x00
+        je      atoi_pool
+
+        mul     rax,0x0a ; multiply accumulator by 10
+        sub     rbx,'0'  ; subtract the offset
+        add     rax,rbx  ; increase by new digit
+        inc     rsi
+
+        jmp     atoi_loop
+
+    atoi_pool:
+        pop     rsi
+        pop     rbx
+        ret
