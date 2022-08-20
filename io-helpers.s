@@ -14,7 +14,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-%define NUL 0
+%include "consts.s"
 
 global _puts
 
@@ -35,8 +35,8 @@ _puts:
         jne _putsLoop
 
         ; sys_write to stdout
-        mov rax, 1
-        mov rdi, 1
+        mov rax, SYS_WRITE
+        mov rdi, STDOUT
         pop rsi
         mov rdx, rbx
         syscall

@@ -14,16 +14,17 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-%define LF 10
-%define NUL 0
+%include "consts.s"
 
+; globals and externs
 global _start
-
 extern _puts
+
 
 section .data
         text1 db "Sample text 1",LF,NUL
         text2 db "Sample text 2",LF,NUL
+
 
 section .text
 _start:
@@ -33,6 +34,4 @@ _start:
         mov rax, text2
         call _puts
 
-        mov rax, 60
-        mov rdi, 0
-        syscall
+        exit 0
