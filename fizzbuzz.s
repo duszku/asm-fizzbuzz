@@ -30,22 +30,41 @@ section .bss
         printFizzbuzzFlags resb 1
 
 section .data
-        number db "123456",NUL
-
         fizz db "Fizz",NUL
         buzz db "Buzz",NUL
-        next db LF,NUL
+        next db ", ",NUL
+        eot db LF,NUL
 
 section .text
 _start:
-        mov rbx, number
+        pop rax
+        cmp rax, 2
+        jne startError
+
+        pop rbx
+        pop rbx
         call _atoi
-        call _putu
 
-        mov rax, next
+        mov r8, rax
+        mov rcx, 1
+
+    startLoop:
+        push rcx
+        cmp rcx, r8
+        je startEnd
+
+        call _printFizzbuzz
+        pop rcx
+        inc rcx
+        jmp startLoop
+
+    startEnd:
+        mov rax, eot
         call _puts
-
         exit 0
+
+    startError:
+        exit 1
 
 ; prints either value in RCX, "fizz" or "buzz" according to rules
 _printFizzbuzz:
