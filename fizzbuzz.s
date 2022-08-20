@@ -1,104 +1,124 @@
-%define NUL 0x00
-%define LF  0x0a
+; asm-fizzbuzz, fizzbuzz in x86_64 assembly
+; Copyright (C) 2022 duszku
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-section .data
-    s_hello_msg: db "Welcome to assembly fizz-buzz!",LF,NUL
-    s_input_msg: db "Give a bound: ",NUL
-    s_fizz_buzz: db "Fizz Buzz",NUL
-    s_fizz:      db "Fizz",NUL
-    s_buzz:      db "Buzz",NUL
-    s_next:      db ", ",NUL
+%include "consts.s"
+
+IS_FIZZ equ 0x01
+IS_BUZZ equ 0x02
+
+; globals and externs
+global _start
+
+extern _puts
+extern _putu
+extern _atoi
 
 section .bss
-    s_bound_inp: resb 0x09
+        printFizzbuzzFlags resb 1
+
+section .data
+        fizz db "Fizz",NUL
+        buzz db "Buzz",NUL
+        next db ", ",NUL
+        eot db LF,NUL
 
 section .text
-    global _start
+_start:
+        pop rax
+        cmp rax, 2
+        jne startError
 
-    %include "string.s"
+        pop rbx
+        pop rbx
+        call _atoi
 
-    _start:
-        ; Printing welcome message
-        mov     rsi,s_hello_msg
-        call    putstr
-        mov     rsi,s_input_msg
-        call    putstr
+        mov r8, rax
+        mov rcx, 1
 
-        ; Reading bound from stdin
-        mov     rsi,s_bound_inp
-        mov     rdx,0x09
-        call    getstr
-        call    atoi
+    startLoop:
+        push rcx
+        cmp rcx, r8
+        je startEnd
 
-        push    rax
-        mov     rax,0x01
+        call _printFizzbuzz
+        pop rcx
+        inc rcx
+        jmp startLoop
 
-    main_loop:
-        pop     rcx
-        cmp     rcx,rax
-        push    rcx
-        je      main_pool
+    startEnd:
+        mov rax, eot
+        call _puts
+        exit 0
 
-    main_if: ; is the number in RAX divisible by 15 (fizzbuzz)
-        push    rax
+    startError:
+        exit 1
 
-        mov     ebx,0x0f
-        cqo
-        div     ebx
-        cmp     rdx,0x00
-        pop     rax
-        jne     main_elif
+; prints either value in RCX, "fizz" or "buzz" according to rules
+_printFizzbuzz:
+        mov byte [printFizzbuzzFlags], 0
 
-        mov     rsi,s_fizz_buzz
-        call    putstr
-        jmp     main_fi
+        mov rax, rcx
+        mov rbx, 3
+        call _divisor
+        jne check_buzz
 
-    main_elif: ; is the number in RAX divisible by 3? (fizz)
-        push    rax
+        or byte [printFizzbuzzFlags], IS_FIZZ
 
-        mov     ebx,0x03
-        cqo
-        div     ebx
-        cmp     rdx,0x00
-        pop     rax
-        jne     main_elif_2
+    check_buzz:
+        mov rax, rcx
+        mov rbx, 5
+        call _divisor
+        jne printing
 
-        mov     rsi,s_fizz
-        call    putstr
-        jmp     main_fi
+        or byte [printFizzbuzzFlags], IS_BUZZ
 
-    main_elif_2: ; is the number in RAX divisible by 5? (buzz)
-        push    rax
+    printing:
+        cmp byte [printFizzbuzzFlags], 0
+        je printNumber
 
-        mov     ebx,0x05
-        cqo
-        div     ebx
-        cmp     rdx,0x00
-        pop     rax
-        jne     main_elif_3
+        mov dl, byte [printFizzbuzzFlags]
+        and dl, IS_FIZZ
+        cmp dl, IS_FIZZ
+        jne printBuzz
 
-        mov     rsi,s_buzz
-        call    putstr
-        jmp     main_fi
+        mov rax, fizz
+        call _puts
 
-    main_elif_3:
-        mov     rsi,s_bound_inp
-        call    itoa
-        call    putstr
+    printBuzz:
+        mov dl, byte [printFizzbuzzFlags]
+        and dl, IS_BUZZ
+        cmp dl, IS_BUZZ
+        jne printNext
 
-    main_fi:
-        mov     rsi,s_next
-        call    putstr
+        mov rax, buzz
+        call _puts
+        jmp printNext
 
-        inc     rax
-        jmp     main_loop
+    printNumber:
+        mov rax, rcx
+        call _putu
 
-    main_pool:
+    printNext:
+        mov rax, next
+        call _puts
+        ret
 
-        mov     rdi,0x00
-        call    return_rdi
-
-
-    return_rdi:
-        mov     rax,0x3c
-        syscall
+; checks if value in RAX is divisible by value in RBX
+_divisor:
+        mov rdx, 0
+        div rbx
+        cmp rdx, 0
+        ret
