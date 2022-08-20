@@ -23,12 +23,12 @@ ingredients:
 - 25g of fresh yeast
 - 150ml of water
 - tablespoon of sugar
-- tablespoon of potatoe starch
+- tablespoon of potato starch
 - 250g of wheat flour
 - spoon of salt
 - tablespoon of olive oil
 
-heat the water up to around 30 degrees C, then put sugar and potatoe starch to
+heat the water up to around 30 degrees C, then put sugar and potato starch to
 it and stir well until it dissolves. next break yeast into small pieces and
 add it to water. let it sit for around 15 minutes.
 
