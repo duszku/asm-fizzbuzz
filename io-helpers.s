@@ -18,6 +18,7 @@
 
 global _puts
 global _putu
+global _atoi
 
 section .bss
         putuBuffer resb 256
@@ -89,4 +90,41 @@ _putu:
         call _itoa
         mov rax, putuBuffer
         call _puts
+        ret
+
+; if value in dl is not a digit, calls SYS_EXIT with code 1
+_isDigit:
+        cmp dl, '0'
+        jge _isDigitUpper
+
+        exit 1
+
+    _isDigitUpper:
+        cmp dl, '9'
+        jle _isDigitRet
+
+        exit 1
+
+    _isDigitRet:
+        ret
+
+; converts string pointed by RBX to number and stores it in RAX
+_atoi:
+        mov rax, 0
+        mov rdx, 0
+
+    _atoiLoop:
+        mov dl, byte [rbx]
+        cmp dl, NUL
+        je _atoiEnd
+
+        call _isDigit
+        imul rax, 10
+        sub dl, '0'
+        add rax, rdx
+        inc rbx
+
+        jmp _atoiLoop
+
+    _atoiEnd:
         ret

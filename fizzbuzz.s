@@ -24,28 +24,26 @@ global _start
 
 extern _puts
 extern _putu
+extern _atoi
 
 section .bss
         printFizzbuzzFlags resb 1
 
 section .data
+        number db "123456",NUL
+
         fizz db "Fizz",NUL
         buzz db "Buzz",NUL
         next db LF,NUL
 
 section .text
 _start:
-        mov rcx, 10
-        call _printFizzbuzz
+        mov rbx, number
+        call _atoi
+        call _putu
 
-        mov rcx, 12
-        call _printFizzbuzz
-
-        mov rcx, 13
-        call _printFizzbuzz
-
-        mov rcx, 15
-        call _printFizzbuzz
+        mov rax, next
+        call _puts
 
         exit 0
 
