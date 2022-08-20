@@ -1,5 +1,5 @@
 # asm-fizzbuzz
-fizzbuzz written in x86_64 assembly, for gnu/linux, probably also works on
+fizzbuzz written in x86_64 assembly, for gnu/linux. probably also works on
 other mostly-posix-compliant-unices.
 
 ## usage
