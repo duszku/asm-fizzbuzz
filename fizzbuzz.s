@@ -16,27 +16,92 @@
 
 %include "consts.s"
 
+IS_FIZZ equ 0x01
+IS_BUZZ equ 0x02
+
 ; globals and externs
 global _start
 
 extern _puts
 extern _putu
 
+section .bss
+        printFizzbuzzFlags resb 1
+
 section .data
-        newline db 10,0
+        fizz db "Fizz",NUL
+        buzz db "Buzz",NUL
+        next db LF,NUL
 
 section .text
 _start:
-        ; even number of digits
-        mov rax, 1234
-        call _putu
-        mov rax, newline
-        call _puts
+        mov rcx, 10
+        call _printFizzbuzz
 
-        ; odd number of digits
-        mov rax, 12345
-        call _putu
-        mov rax, newline
-        call _puts
+        mov rcx, 12
+        call _printFizzbuzz
+
+        mov rcx, 13
+        call _printFizzbuzz
+
+        mov rcx, 15
+        call _printFizzbuzz
 
         exit 0
+
+; prints either value in RCX, "fizz" or "buzz" according to rules
+_printFizzbuzz:
+        mov byte [printFizzbuzzFlags], 0
+
+        mov rax, rcx
+        mov rbx, 3
+        call _divisor
+        jne check_buzz
+
+        or byte [printFizzbuzzFlags], IS_FIZZ
+
+    check_buzz:
+        mov rax, rcx
+        mov rbx, 5
+        call _divisor
+        jne printing
+
+        or byte [printFizzbuzzFlags], IS_BUZZ
+
+    printing:
+        cmp byte [printFizzbuzzFlags], 0
+        je printNumber
+
+        mov dl, byte [printFizzbuzzFlags]
+        and dl, IS_FIZZ
+        cmp dl, IS_FIZZ
+        jne printBuzz
+
+        mov rax, fizz
+        call _puts
+
+    printBuzz:
+        mov dl, byte [printFizzbuzzFlags]
+        and dl, IS_BUZZ
+        cmp dl, IS_BUZZ
+        jne printNext
+
+        mov rax, buzz
+        call _puts
+        jmp printNext
+
+    printNumber:
+        mov rax, rcx
+        call _putu
+
+    printNext:
+        mov rax, next
+        call _puts
+        ret
+
+; checks if value in RAX is divisible by value in RBX
+_divisor:
+        mov rdx, 0
+        div rbx
+        cmp rdx, 0
+        ret
