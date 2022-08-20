@@ -3,7 +3,7 @@ FLAGS=-f elf64 -g
 
 LINK=ld
 
-SRC=
+SRC=io-helpers.s fizzbuzz.s
 OBJ=${SRC:.s=.o}
 BINDIR=bin
 
