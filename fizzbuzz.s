@@ -18,20 +18,25 @@
 
 ; globals and externs
 global _start
-extern _puts
 
+extern _puts
+extern _putu
 
 section .data
-        text1 db "Sample text 1",LF,NUL
-        text2 db "Sample text 2",LF,NUL
-
+        newline db 10,0
 
 section .text
 _start:
-        mov rax, text1
+        ; even number of digits
+        mov rax, 1234
+        call _putu
+        mov rax, newline
         call _puts
 
-        mov rax, text2
+        ; odd number of digits
+        mov rax, 12345
+        call _putu
+        mov rax, newline
         call _puts
 
         exit 0

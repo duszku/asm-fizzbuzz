@@ -17,13 +17,16 @@
 %include "consts.s"
 
 global _puts
+global _putu
+
+section .bss
+        putuBuffer resb 256
 
 section .text
 
 ; prints string pointed to by value of RAX to stdout
 _puts:
         push rax
-
         mov rbx, 0
 
     ; finding length of string (in RBX)
@@ -41,4 +44,49 @@ _puts:
         mov rdx, rbx
         syscall
 
+        ret
+
+; converts number in RAX to a string and stores it in putuBuffer
+_itoa:
+        mov rbx, 10
+        mov rsi, putuBuffer
+
+    ; writing REVERSED string to putuBuffer
+    _itoaLoop:
+        mov rdx, 0
+        div rbx
+
+        add rdx, '0'
+        mov byte [rsi], dl
+        inc rsi
+
+        cmp rax, 0
+        jne _itoaLoop
+
+        mov byte [rsi], NUL
+        dec rsi
+
+        mov rcx, putuBuffer
+
+    ; reversing string stored in putuBuffer
+    _itoaReverse:
+        ; swapping
+        mov dl, byte [rcx]
+        mov dh, byte [rsi]
+        mov byte [rcx], dh
+        mov byte [rsi], dl
+
+        inc rcx
+        dec rsi
+
+        cmp rcx, rsi
+        jle _itoaReverse
+
+        ret
+
+; prints number in RAX to stdout
+_putu:
+        call _itoa
+        mov rax, putuBuffer
+        call _puts
         ret
