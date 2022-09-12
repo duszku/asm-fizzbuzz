@@ -16,7 +16,7 @@ make all
 ```
 and then `bin` directory will appear with an executable. if for some reason you 
 wanted to have it in your path, then easiest way would be to link to it in
-`/usr/bin`.
+`/usr/local/bin`.
 
 ## how to make pizza dough
 ingredients:
